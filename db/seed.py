@@ -1,14 +1,15 @@
 import psycopg2
+from connection import get_connection_to_database
 
 
 
-connection = psycopg2.connect(
-    dbname="nc_plus_one",
-    user="postgres",
-    password="password",
-    host="localhost",
-    port=5432 
-)
+#connection = psycopg2.connect(
+#    dbname="nc_plus_one",
+#    user="postgres",
+#    password="password",
+#    host="localhost",
+#    port=5432 
+#)
 
 def create_database_tables():
     cursor = connection.cursor()
@@ -63,6 +64,7 @@ def create_database_tables():
 
     cursor.close()
 
+
 def drop_tables_if_they_exist():
     cursor = connection.cursor()
     cursor.execute("DROP TABLE IF EXISTS Rsvps;")
@@ -70,6 +72,7 @@ def drop_tables_if_they_exist():
     cursor.execute("DROP TABLE IF EXISTS Venues;")
     cursor.execute("DROP TABLE IF EXISTS Users")
     cursor.close()
+
 
 def add_entrys_to_database_table(table, *args):
     cursor = connection.cursor()
@@ -103,15 +106,16 @@ def add_entrys_to_database_table(table, *args):
 
 
 
+connection = get_connection_to_database()
+
 drop_tables_if_they_exist()
 create_database_tables()
-add_entrys_to_database_table('Users', {"name": "Alice Rahman","email": "alice@example.com","password": "password123"})
-add_entrys_to_database_table('Venues',  {"name": "Nexus, University of Leeds","address": "Discovery Way, Leeds, LS2 3AA","capacity": 200})
-add_entrys_to_database_table('Events', {"title": "Intro to Machine Learning Workshop","description": "Hands-on workshop covering perceptrons, neural networks, and classifiers using NumPy and PyTorch.","starts_at": "2026-06-25T10:00:00+01:00","ends_at": "2026-06-25T13:00:00+01:00", "organiser_id": 1,"venue_id": 1})
-add_entrys_to_database_table('Rsvps', { "attendee_id": 1, "event_id": 1 })
-
-
+#add_entrys_to_database_table('Users', {"name": "Alice Rahman","email": "alice@example.com","password": "password123"})
+#add_entrys_to_database_table('Venues',  {"name": "Nexus, University of Leeds","address": "Discovery Way, Leeds, LS2 3AA","capacity": 200})
+#add_entrys_to_database_table('Events', {"title": "Intro to Machine Learning Workshop","description": "Hands-on workshop covering perceptrons, neural networks, and classifiers using NumPy and PyTorch.","starts_at": "2026-06-25T10:00:00+01:00","ends_at": "2026-06-25T13:00:00+01:00", "organiser_id": 1,"venue_id": 1})
+#add_entrys_to_database_table('Rsvps', { "attendee_id": 1, "event_id": 1 })
 connection.commit()
 
 connection.close()
+
 
