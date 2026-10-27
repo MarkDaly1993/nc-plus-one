@@ -4,7 +4,7 @@ import json
 
 
 
-def create_database_tables():
+def create_database_tables(connection):
     cursor = connection.cursor()
 
     cursor.execute(
@@ -58,7 +58,7 @@ def create_database_tables():
     cursor.close()
 
 
-def drop_tables_if_they_exist():
+def drop_tables_if_they_exist(connection):
     cursor = connection.cursor()
     cursor.execute("DROP TABLE IF EXISTS Rsvps;")
     cursor.execute("DROP TABLE IF EXISTS Events;")
@@ -66,7 +66,7 @@ def drop_tables_if_they_exist():
     cursor.execute("DROP TABLE IF EXISTS Users")
     cursor.close()
 
-def populate_data_base_with_user_data():
+def populate_data_base_with_user_data(connection):
     cursor = connection.cursor()
     with open("db/test_data/users.json") as file:
         user_data = json.load(file)
@@ -76,7 +76,7 @@ def populate_data_base_with_user_data():
         (user['name'], user['email'], user['password']))
     cursor.close()
 
-def populate_data_base_with_venue_data():
+def populate_data_base_with_venue_data(connection):
     cursor = connection.cursor()
     with open("db/test_data/venues.json") as file:
         venues_data = json.load(file)
@@ -86,7 +86,7 @@ def populate_data_base_with_venue_data():
         (venue['name'], venue['address'], venue['capacity']))
     cursor.close()
 
-def populate_data_base_with_event_data():
+def populate_data_base_with_event_data(connection):
     cursor = connection.cursor()
     with open("db/test_data/events.json") as file:
         events_data = json.load(file)
@@ -96,7 +96,7 @@ def populate_data_base_with_event_data():
         (event['title'], event['description'], event['starts_at'], event['ends_at'], event['organiser_id'], event['venue_id']))
     cursor.close()
 
-def populate_data_base_with_rsvps_data():
+def populate_data_base_with_rsvps_data(connection):
     cursor = connection.cursor()
     with open("db/test_data/rsvps.json") as file:
         rsvps_data = json.load(file)
@@ -106,52 +106,51 @@ def populate_data_base_with_rsvps_data():
         (rsvp['attendee_id'], rsvp['event_id']))
     cursor.close()
 
-def add_entrys_to_database_table(table, *args):
-    cursor = connection.cursor()
-    if table.lower() == 'users': 
-        for entrys in args:
-            statment = "INSERT INTO Users (name, email, password) VALUES (%s, %s, %s);"
-            cursor.execute(statment, 
-            (entrys['name'], entrys['email'], entrys['password']))
+# def add_entrys_to_database_table(table, *args):
+#     cursor = connection.cursor()
+#     if table.lower() == 'users': 
+#         for entrys in args:
+#             statment = "INSERT INTO Users (name, email, password) VALUES (%s, %s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['name'], entrys['email'], entrys['password']))
     
-    if table.lower() == 'venues': 
-        for entrys in args:
-            statment = "INSERT INTO Venues (name, address, capacity) VALUES (%s, %s, %s);"
-            cursor.execute(statment, 
-            (entrys['name'], entrys['address'], entrys['capacity']))
+#     if table.lower() == 'venues': 
+#         for entrys in args:
+#             statment = "INSERT INTO Venues (name, address, capacity) VALUES (%s, %s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['name'], entrys['address'], entrys['capacity']))
 
-    if table.lower() == 'events': 
-        for entrys in args:
-            statment = "INSERT INTO Events (title, description, starts_at, ends_at, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s, %s);"
-            cursor.execute(statment, 
-            (entrys['title'], entrys['description'], entrys['starts_at'], entrys['ends_at'], entrys['organiser_id'], entrys['venue_id']))
+#     if table.lower() == 'events': 
+#         for entrys in args:
+#             statment = "INSERT INTO Events (title, description, starts_at, ends_at, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['title'], entrys['description'], entrys['starts_at'], entrys['ends_at'], entrys['organiser_id'], entrys['venue_id']))
 
-    if table.lower() == 'rsvps': 
-        for entrys in args:
-            statment = "INSERT INTO Rsvps (attendee_id, event_id) VALUES (%s, %s);"
-            cursor.execute(statment, 
-            (entrys['attendee_id'], entrys['event_id']))
-    else:
-        cursor.close()
-        return 'Sorry you have not entered a vaild table'
-    cursor.close()
+#     if table.lower() == 'rsvps': 
+#         for entrys in args:
+#             statment = "INSERT INTO Rsvps (attendee_id, event_id) VALUES (%s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['attendee_id'], entrys['event_id']))
+#     else:
+#         cursor.close()
+#         return 'Sorry you have not entered a vaild table'
+#     cursor.close()
 
-def seed():
-    drop_tables_if_they_exist()
-    create_database_tables()
-    populate_data_base_with_user_data()
-    populate_data_base_with_venue_data()
-    populate_data_base_with_event_data()
-    populate_data_base_with_rsvps_data()
-
-
-connection = get_connection_to_database_test()
-
-seed()
+def seed(conn):
+    # connection = get_connection_to_database_test()
+    drop_tables_if_they_exist(conn)
+    create_database_tables(conn)
+    populate_data_base_with_user_data(conn)
+    populate_data_base_with_venue_data(conn)
+    populate_data_base_with_event_data(conn)
+    populate_data_base_with_rsvps_data(conn)
 
 
-connection.commit()
 
-connection.close()
+
+#connection = get_connection_to_database_test()
+#seed(connection)
+#connection.commit()
+#connection.close()
 
 
