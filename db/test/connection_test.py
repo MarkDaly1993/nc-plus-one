@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 import psycopg2
 
 
-def get_connection_to_database():
-    load_dotenv()
+def get_connection_to_database_test():
+    load_dotenv('.env.test')
 
     connection = psycopg2.connect(
         dbname= os.getenv("dbname"),
@@ -13,5 +13,4 @@ def get_connection_to_database():
         host= os.getenv("host"),
         port= os.getenv('port')
     )
-
     return connection

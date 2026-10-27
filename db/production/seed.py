@@ -4,14 +4,6 @@ import json
 
 
 
-#connection = psycopg2.connect(
-#    dbname="nc_plus_one",
-#    user="postgres",
-#    password="password",
-#    host="localhost",
-#    port=5432 
-#)
-
 def create_database_tables():
     cursor = connection.cursor()
 
@@ -157,16 +149,6 @@ connection = get_connection_to_database()
 
 seed()
 
-#drop_tables_if_they_exist()
-#create_database_tables()
-#add_entrys_to_database_table('Users', {"name": "Alice Rahman","email": "alice@example.com","password": "password123"})
-#add_entrys_to_database_table('Venues',  {"name": "Nexus, University of Leeds","address": "Discovery Way, Leeds, LS2 3AA","capacity": 200})
-#add_entrys_to_database_table('Events', {"title": "Intro to Machine Learning Workshop","description": "Hands-on workshop covering perceptrons, neural networks, and classifiers using NumPy and PyTorch.","starts_at": "2026-06-25T10:00:00+01:00","ends_at": "2026-06-25T13:00:00+01:00", "organiser_id": 1,"venue_id": 1})
-#add_entrys_to_database_table('Rsvps', { "attendee_id": 1, "event_id": 1 })
-#populate_data_base_with_user_data()
-#populate_data_base_with_venue_data()
-#populate_data_base_with_event_data()
-#populate_data_base_with_rsvps_data()
 
 connection.commit()
 

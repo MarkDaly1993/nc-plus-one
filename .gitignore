@@ -1,1 +1,4 @@
 .venv
+NOTE.md
+.env
+.env.test
