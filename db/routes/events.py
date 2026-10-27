@@ -6,6 +6,7 @@ from typing import Optional
 
 event_router = APIRouter(prefix='/api/events')
 
+
 @event_router.get("/")
 def get_events():
     connection = get_connection()
@@ -17,7 +18,6 @@ def get_events():
     rows_list = []
     for row in rows:
         rows_list.append({'id': row[0], 'title': row[1], 'start_at': row[2], 'end_at': row[3], 'location' : row[9]})
-
     return {"events": rows_list}
 
 @event_router.get("/{event_id}", status_code=200)
@@ -25,8 +25,8 @@ def get_event(event_id: int):
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM events RIGHT JOIN venues ON events.venue_id  = venues.id WHERE events.id = %s;", (event_id,))
-    # if type(event_id) != int:
-    #     raise HTTPException (status_code=400, detail={'code': '400', 'message': 'invalid ID'})
+    if type(event_id) != int:
+        raise HTTPException (status_code=400, detail={'code': '400', 'message': 'invalid ID'})
     row = cursor.fetchone()
     cursor.close()
     connection.close()

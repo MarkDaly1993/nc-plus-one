@@ -40,8 +40,21 @@ def test_get_event_returns_404_if_event_not_present(client):
 def test_get_event_returns_a_single_event(client):
     responce = client.get("/api/events/1")
     body = responce.json()
-    assert len(body['event']) == 6
+    assert len(body['event']) == 9
+
+def test_get_event_returns_the_correct_event_based_on_id(client):
+    response = client.get("/api/events/1")
+    body = response.json()
+    assert body['event']['title'] == 'event_d'
+
+def test_get_event_only_returns_one_event(client):
+    response = client.get("/api/events/1")
+    body = response.json()
+    assert len(body) == 1
 
 
+def test_get_event_returns_400_if_id_is_invalid_type(client):
+    response = client.get("/api/events/abc")
+    assert response.status_code == 400
 
 
