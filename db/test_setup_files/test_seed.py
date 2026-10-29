@@ -1,6 +1,7 @@
 import psycopg2
 from connection_test import get_connection_to_database_test
 import json
+from password import hash_password
 
 
 
@@ -73,7 +74,7 @@ def populate_data_base_with_user_data(connection):
     for user in user_data:
         statment = "INSERT INTO Users (name, email, password) VALUES (%s, %s, %s);"
         cursor.execute(statment, 
-        (user['name'], user['email'], user['password']))
+        (user['name'], user['email'], hash_password(user['password'])))
     cursor.close()
 
 def populate_data_base_with_venue_data(connection):
@@ -144,13 +145,14 @@ def seed(conn):
     populate_data_base_with_venue_data(conn)
     populate_data_base_with_event_data(conn)
     populate_data_base_with_rsvps_data(conn)
+    conn.commit()
 
 
 
 
-#connection = get_connection_to_database_test()
-#seed(connection)
-#connection.commit()
-#connection.close()
+# connection = get_connection_to_database_test()
+# seed(connection)
+# connection.commit()
+# connection.close()
 
 

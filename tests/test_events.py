@@ -58,5 +58,6 @@ def test_get_event_only_returns_one_event(client):
 def test_get_event_returns_400_if_id_is_invalid_type(client):
     response = client.get("/api/events/abc")
     assert response.status_code == 400
+    
 
 

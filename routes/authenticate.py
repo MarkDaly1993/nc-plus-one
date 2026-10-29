@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 from db.test_setup_files.password import hash_password, verify_password
 from jwt_token import create_access_token
+from psycopg2.errors import UniqueViolation
 
 
 
@@ -27,7 +28,7 @@ def authenticate_user(body: User_Login):
     cursor.close()
     connection.close()
     if user is None:
-         raise HTTPException(status_code=401, detail={'code': '401', 'message': 'Unauthorized failed to login'})
+        raise HTTPException(status_code=401, detail={'code': '401', 'message': 'Unauthorized failed to login'})
     if verify_password(body.password, user[2]):
         return {"token" :create_access_token(user[0])}
     else:
@@ -37,16 +38,20 @@ def authenticate_user(body: User_Login):
 def register_user(body: User_Create):
     connection = get_connection()
     cursor = connection.cursor()
-    cursor.execute("""
-    INSERT INTO users (name, email, password)
-    VALUES (%s, %s, %s)
-    RETURNING *
-    """, (body.name, body.email, hash_password(body.password)))
-    user = cursor.fetchone()
-    connection.commit()
-    cursor.close()
-    connection.close()
-    return {}
+    try:
+        cursor.execute("""
+        INSERT INTO users (name, email, password)
+        VALUES (%s, %s, %s)
+        RETURNING *
+        """, (body.name, body.email, hash_password(body.password)))
+    except UniqueViolation:
+        raise HTTPException(status_code=409, detail={'code': '409', 'message': 'Unauthorized failed to login'})  
+    else:
+        user = cursor.fetchone()
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return {'user' : {'id': user[0],'name': user[3], 'email': user[1], 'created_at': user[4] }}
 
 
 # @app.post("/missions", status_code=201)
