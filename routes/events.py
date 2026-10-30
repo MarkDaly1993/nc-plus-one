@@ -13,8 +13,13 @@ event_router = APIRouter(prefix='/api/events')
 class Rsvp_Booking(BaseModel):
     token: str
 
-class Rsvp_Deletion(BaseModel):
-    Authorization : str
+# class Event_Create(BaseModel):
+#     title: str
+#     description: str
+#     starts_at: str
+#     end_at: str
+#     venue_id: int
+
 
 #If called will return all the entrys in events. THe body indules location from the venues table
 @event_router.get("/")
@@ -71,10 +76,9 @@ def create_rsvp(event_id: int, body: Rsvp_Booking):
     return{"rsvp": {"id": rsvp[0], "attendee_id": rsvp[1], "event_id": rsvp[2], "created_at": rsvp[3]}}
 
 @event_router.delete("/{event_id}/rsvp/me", status_code=204)
-def remove_rsvp(event_id: int, body: dict = Depends(get_current_user)):
+def delete_rsvp(event_id: int, body: dict = Depends(get_current_user)):
     connection = get_connection()
     cursor = connection.cursor()
-    print(body)
     user_id = body['sub']
     cursor.execute("SELECT * FROM rsvps WHERE attendee_id = %s AND event_id = %s;", (user_id, event_id))
     row = cursor.fetchone()
@@ -84,13 +88,9 @@ def remove_rsvp(event_id: int, body: dict = Depends(get_current_user)):
     connection.commit()
     cursor.close()
     connection.close()
-#  dependencies=[Depends(get_current_user)
-# @plant_router.get("/", dependencies=[Depends(get_current_customer)])
-# def get_plants():
-#    plants = list_plants()
-#    return {"plants": plants}
 
-
+# @event_router.post("/", status_code=204)
+# def create_event(body:)
 
 
     

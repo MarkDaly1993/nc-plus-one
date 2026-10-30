@@ -52,7 +52,8 @@ def create_database_tables():
             event_id INT,
             CONSTRAINT fk_Events
             FOREIGN KEY (event_id)
-            REFERENCES Events(id)
+            REFERENCES Events(id),
+            created_at TIMESTAMPTZ DEFAULT NOW()
         );""")
 
     cursor.close()
@@ -68,7 +69,7 @@ def drop_tables_if_they_exist():
 
 def populate_data_base_with_user_data():
     cursor = connection.cursor()
-    with open("db/data/users.json") as file:
+    with open("db/production/data/users.json") as file:
         user_data = json.load(file)
     for user in user_data:
         statment = "INSERT INTO Users (name, email, password) VALUES (%s, %s, %s);"
@@ -78,7 +79,7 @@ def populate_data_base_with_user_data():
 
 def populate_data_base_with_venue_data():
     cursor = connection.cursor()
-    with open("db/data/venues.json") as file:
+    with open("db/production/data/venues.json") as file:
         venues_data = json.load(file)
     for venue in venues_data:
         statment = "INSERT INTO Venues (name, address, capacity) VALUES (%s, %s, %s);"
@@ -88,7 +89,7 @@ def populate_data_base_with_venue_data():
 
 def populate_data_base_with_event_data():
     cursor = connection.cursor()
-    with open("db/data/events.json") as file:
+    with open("db/production/data/events.json") as file:
         events_data = json.load(file)
     for event in events_data:
         statment = "INSERT INTO Events (title, description, starts_at, ends_at, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s, %s);"
@@ -98,7 +99,7 @@ def populate_data_base_with_event_data():
 
 def populate_data_base_with_rsvps_data():
     cursor = connection.cursor()
-    with open("db/data/rsvps.json") as file:
+    with open("db/production/data/rsvps.json") as file:
         rsvps_data = json.load(file)
     for rsvp in rsvps_data:
         statment = "INSERT INTO Rsvps (attendee_id, event_id) VALUES (%s, %s);"
@@ -136,22 +137,34 @@ def add_entrys_to_database_table(table, *args):
         return 'Sorry you have not entered a vaild table'
     cursor.close()
 
-def seed():
-    drop_tables_if_they_exist()
-    create_database_tables()
-    populate_data_base_with_user_data()
-    populate_data_base_with_venue_data()
-    populate_data_base_with_event_data()
-    populate_data_base_with_rsvps_data()
+def seed(conn):
+    drop_tables_if_they_exist(conn)
+    create_database_tables(conn)
+    populate_data_base_with_user_data(conn)
+    populate_data_base_with_venue_data(conn)
+    populate_data_base_with_event_data(conn)
+    populate_data_base_with_rsvps_data(conn)
+    conn.commit()
 
 
 connection = get_connection_to_database()
-
-seed()
-
-
-connection.commit()
-
+seed(connection)
 connection.close()
 
 
+
+# def seed(conn):
+#     drop_tables_if_they_exist(conn)
+#     create_database_tables(conn)
+#     populate_data_base_with_user_data(conn)
+#     populate_data_base_with_venue_data(conn)
+#     populate_data_base_with_event_data(conn)
+#     populate_data_base_with_rsvps_data(conn)
+#     conn.commit()
+
+
+
+
+# # connection = get_connection_to_database_test()
+# # seed(connection)
+# # connection.close()

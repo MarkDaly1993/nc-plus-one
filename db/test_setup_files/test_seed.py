@@ -70,7 +70,7 @@ def drop_tables_if_they_exist(connection):
 
 def populate_data_base_with_user_data(connection):
     cursor = connection.cursor()
-    with open("db/test_data/users.json") as file:
+    with open("db/test_setup_files/test_data/users.json") as file:
         user_data = json.load(file)
     for user in user_data:
         statment = "INSERT INTO Users (name, email, password) VALUES (%s, %s, %s);"
@@ -80,7 +80,7 @@ def populate_data_base_with_user_data(connection):
 
 def populate_data_base_with_venue_data(connection):
     cursor = connection.cursor()
-    with open("db/test_data/venues.json") as file:
+    with open("db/test_setup_files/test_data/venues.json") as file:
         venues_data = json.load(file)
     for venue in venues_data:
         statment = "INSERT INTO Venues (name, address, capacity) VALUES (%s, %s, %s);"
@@ -90,7 +90,7 @@ def populate_data_base_with_venue_data(connection):
 
 def populate_data_base_with_event_data(connection):
     cursor = connection.cursor()
-    with open("db/test_data/events.json") as file:
+    with open("db/test_setup_files/test_data/events.json") as file:
         events_data = json.load(file)
     for event in events_data:
         statment = "INSERT INTO Events (title, description, starts_at, ends_at, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s, %s);"
@@ -100,7 +100,7 @@ def populate_data_base_with_event_data(connection):
 
 def populate_data_base_with_rsvps_data(connection):
     cursor = connection.cursor()
-    with open("db/test_data/rsvps.json") as file:
+    with open("db/test_setup_files/test_data/rsvps.json") as file:
         rsvps_data = json.load(file)
     for rsvp in rsvps_data:
         statment = "INSERT INTO Rsvps (attendee_id, event_id) VALUES (%s, %s);"
@@ -139,7 +139,6 @@ def populate_data_base_with_rsvps_data(connection):
 #     cursor.close()
 
 def seed(conn):
-    # connection = get_connection_to_database_test()
     drop_tables_if_they_exist(conn)
     create_database_tables(conn)
     populate_data_base_with_user_data(conn)

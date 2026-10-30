@@ -45,7 +45,7 @@ def register_user(body: User_Create):
         RETURNING *
         """, (body.name, body.email, hash_password(body.password)))
     except UniqueViolation:
-        raise HTTPException(status_code=409, detail={'code': '409', 'message': 'Unauthorized failed to login'})  
+        raise HTTPException(status_code=409, detail={'code': '409', 'message': 'Confict Email already register'})  
     else:
         user = cursor.fetchone()
         connection.commit()
