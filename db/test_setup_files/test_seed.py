@@ -53,7 +53,8 @@ def create_database_tables(connection):
             event_id INT,
             CONSTRAINT fk_Events
             FOREIGN KEY (event_id)
-            REFERENCES Events(id)
+            REFERENCES Events(id),
+            created_at TIMESTAMPTZ DEFAULT NOW()
         );""")
 
     cursor.close()
@@ -152,7 +153,6 @@ def seed(conn):
 
 # connection = get_connection_to_database_test()
 # seed(connection)
-# connection.commit()
 # connection.close()
 
 

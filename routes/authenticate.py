@@ -51,21 +51,7 @@ def register_user(body: User_Create):
         connection.commit()
         cursor.close()
         connection.close()
-        return {'user' : {'id': user[0],'name': user[3], 'email': user[1], 'created_at': user[4] }}
+        return {'user' : {'id': user[0],'name': user[3], 'email': user[1], 'created_at': user[4]}}
 
 
-# @app.post("/missions", status_code=201)
-# def create_mission(mission: MissionCreate):
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     cursor.execute("""
-#     INSERT INTO missions (name, destination, status, spacecraft_id)
-#     VALUES (%s, %s, %s, %s)
-#     RETURNING *
-#     """, (mission.name, mission.destination, mission.status, mission.spacecraft_id))
-#     columns = [desc[0] for desc in cursor.description]
-#     row = cursor.fetchone()
-#     conn.commit()
-#     cursor.close()
-#     conn.close()
-#     return dict(zip(columns, row))
+
