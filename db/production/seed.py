@@ -2,10 +2,16 @@ import psycopg2
 from connection import get_connection_to_database
 import json
 
-
+#This file if ran will reset the nc_plus_one database
+#This is done through the seed() function
 
 def create_database_tables():
     cursor = connection.cursor()
+    """Creates the 4 tables in the required database
+    adds in factors like specific values being unique 
+    or auto creating an id if created"
+    due to certain keys being refences from other tables
+    it has to create them in this order"""
 
     cursor.execute(
         """CREATE TABLE Users (
@@ -60,6 +66,9 @@ def create_database_tables():
 
 
 def drop_tables_if_they_exist():
+    """reset the database by droping all of the 4 tables if they exist
+    Due to certain keys being refenced from other tables it has to drop 
+    them in this order"""
     cursor = connection.cursor()
     cursor.execute("DROP TABLE IF EXISTS Rsvps;")
     cursor.execute("DROP TABLE IF EXISTS Events;")
@@ -68,6 +77,7 @@ def drop_tables_if_they_exist():
     cursor.close()
 
 def populate_data_base_with_user_data():
+    """Seeds the users table from the users json file"""
     cursor = connection.cursor()
     with open("db/production/data/users.json") as file:
         user_data = json.load(file)
@@ -78,6 +88,7 @@ def populate_data_base_with_user_data():
     cursor.close()
 
 def populate_data_base_with_venue_data():
+    """Seeds the venues table from the venues json file"""
     cursor = connection.cursor()
     with open("db/production/data/venues.json") as file:
         venues_data = json.load(file)
@@ -88,6 +99,7 @@ def populate_data_base_with_venue_data():
     cursor.close()
 
 def populate_data_base_with_event_data():
+    """Seeds the events table from the events json file"""
     cursor = connection.cursor()
     with open("db/production/data/events.json") as file:
         events_data = json.load(file)
@@ -98,6 +110,7 @@ def populate_data_base_with_event_data():
     cursor.close()
 
 def populate_data_base_with_rsvps_data():
+    """Seeds the rsvps table from the rsvps json file"""
     cursor = connection.cursor()
     with open("db/production/data/rsvps.json") as file:
         rsvps_data = json.load(file)
@@ -107,37 +120,39 @@ def populate_data_base_with_rsvps_data():
         (rsvp['attendee_id'], rsvp['event_id']))
     cursor.close()
 
-def add_entrys_to_database_table(table, *args):
-    cursor = connection.cursor()
-    if table.lower() == 'users': 
-        for entrys in args:
-            statment = "INSERT INTO Users (name, email, password) VALUES (%s, %s, %s);"
-            cursor.execute(statment, 
-            (entrys['name'], entrys['email'], entrys['password']))
+# def add_entrys_to_database_table(table, *args):
+#     cursor = connection.cursor()
+#     if table.lower() == 'users': 
+#         for entrys in args:
+#             statment = "INSERT INTO Users (name, email, password) VALUES (%s, %s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['name'], entrys['email'], entrys['password']))
     
-    if table.lower() == 'venues': 
-        for entrys in args:
-            statment = "INSERT INTO Venues (name, address, capacity) VALUES (%s, %s, %s);"
-            cursor.execute(statment, 
-            (entrys['name'], entrys['address'], entrys['capacity']))
+#     if table.lower() == 'venues': 
+#         for entrys in args:
+#             statment = "INSERT INTO Venues (name, address, capacity) VALUES (%s, %s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['name'], entrys['address'], entrys['capacity']))
 
-    if table.lower() == 'events': 
-        for entrys in args:
-            statment = "INSERT INTO Events (title, description, starts_at, ends_at, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s, %s);"
-            cursor.execute(statment, 
-            (entrys['title'], entrys['description'], entrys['starts_at'], entrys['ends_at'], entrys['organiser_id'], entrys['venue_id']))
+#     if table.lower() == 'events': 
+#         for entrys in args:
+#             statment = "INSERT INTO Events (title, description, starts_at, ends_at, organiser_id, venue_id) VALUES (%s, %s, %s, %s, %s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['title'], entrys['description'], entrys['starts_at'], entrys['ends_at'], entrys['organiser_id'], entrys['venue_id']))
 
-    if table.lower() == 'rsvps': 
-        for entrys in args:
-            statment = "INSERT INTO Rsvps (attendee_id, event_id) VALUES (%s, %s);"
-            cursor.execute(statment, 
-            (entrys['attendee_id'], entrys['event_id']))
-    else:
-        cursor.close()
-        return 'Sorry you have not entered a vaild table'
-    cursor.close()
+#     if table.lower() == 'rsvps': 
+#         for entrys in args:
+#             statment = "INSERT INTO Rsvps (attendee_id, event_id) VALUES (%s, %s);"
+#             cursor.execute(statment, 
+#             (entrys['attendee_id'], entrys['event_id']))
+#     else:
+#         cursor.close()
+#         return 'Sorry you have not entered a vaild table'
+#     cursor.close()
 
 def seed(conn):
+    """Invokes the fucnctions to reset the database 
+    and reseed the data into it"""
     drop_tables_if_they_exist(conn)
     create_database_tables(conn)
     populate_data_base_with_user_data(conn)
