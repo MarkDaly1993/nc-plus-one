@@ -7,7 +7,7 @@ from jwt_token import create_access_token
 from psycopg2.errors import UniqueViolation
 
 
-
+#route that is connected to app from main.py
 authenticate_router = APIRouter(prefix='/api/auth')
 
 class User_Login(BaseModel):
@@ -23,6 +23,12 @@ class User_Create(BaseModel):
 #uses the User_Login
 @authenticate_router.post("/login")
 def authenticate_user(body: User_Login) -> dict:
+    """End point is used to check a users password against
+    the one they have registered in the users table
+    It check the password agaist the hashed one in users
+    If valid it creates and returns a JWT token
+    If not it sends a status code 401"""
+
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM users WHERE email = %s",(body.email,))
@@ -45,6 +51,11 @@ def authenticate_user(body: User_Login) -> dict:
 #uses the User_Create
 @authenticate_router.post("/register", status_code= 201)
 def register_user(body: User_Create) -> dict:
+
+    """Registers a new user in the users table
+    hashes the given plaintext password for security
+    raises a 409 if the email is already present in users
+    """
     connection = get_connection()
     cursor = connection.cursor()
     #test to see if email is already in users

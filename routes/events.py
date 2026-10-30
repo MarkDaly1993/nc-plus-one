@@ -7,7 +7,7 @@ from psycopg2.errors import ForeignKeyViolation
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 
-
+#router that is connected to app in main.py
 event_router = APIRouter(prefix='/api/events')
 
 class Rsvp_Booking(BaseModel):
@@ -25,6 +25,7 @@ class Rsvp_Booking(BaseModel):
 #The body indules location from the venues table
 @event_router.get("/")
 def get_events() -> dict:
+    """retruns all events present within the the events table"""
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM events RIGHT JOIN venues ON events.venue_id = venues.id;")
@@ -43,6 +44,8 @@ def get_events() -> dict:
 
 @event_router.get("/{event_id}", status_code=200)
 def get_event(event_id: int) -> dict:
+    """returns a single event if given the vaild event_id
+    If the id is invaild it returns a status code of 404"""
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM events RIGHT JOIN venues ON events.venue_id  = venues.id WHERE events.id = %s;", (event_id,))
@@ -87,6 +90,10 @@ def create_rsvp(event_id: int, body: Rsvp_Booking) -> dict:
 #will delete a entry in rsvps if its present
 @event_router.delete("/{event_id}/rsvp/me", status_code=204)
 def delete_rsvp(event_id: int, body: dict = Depends(get_current_user)) -> None:
+    """Deletes a rsvp entry from the rsvp table if present
+    Checks for validation before hand using a JWT token
+    raises 404 if the rsvp in question is not present
+    """
     #checks JWT token is valid
     connection = get_connection()
     cursor = connection.cursor()
