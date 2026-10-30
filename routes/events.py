@@ -21,9 +21,10 @@ class Rsvp_Booking(BaseModel):
 #     venue_id: int
 
 
-#If called will return all the entrys in events. THe body indules location from the venues table
+#If called will return all the entrys in events. 
+#The body indules location from the venues table
 @event_router.get("/")
-def get_events():
+def get_events() -> dict:
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM events RIGHT JOIN venues ON events.venue_id = venues.id;")
@@ -35,24 +36,29 @@ def get_events():
         rows_list.append({'id': row[0], 'title': row[1], 'start_at': row[2], 'end_at': row[3], 'location' : row[9]})
     return {"events": rows_list}
 
-#If called will return a single event based on the id passed in. returned body also includes the locacation ,address and capacity from
+
+
+#If called will return a single event based on the id passed in.
+# returned body also includes the locacation ,address and capacity from
+
 @event_router.get("/{event_id}", status_code=200)
-def get_event(event_id: int):
+def get_event(event_id: int) -> dict:
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM events RIGHT JOIN venues ON events.venue_id  = venues.id WHERE events.id = %s;", (event_id,))
-    if type(event_id) != int:
-        raise HTTPException (status_code=400, detail={'code': '400', 'message': 'invalid ID'})
     row = cursor.fetchone()
     cursor.close()
     connection.close()
     if row is None:
+        #checks to see if the event_id is a real event
         raise HTTPException (status_code=404, detail={'code': '404', 'message': 'event not found'})
     return {'event': {'id': row[0],'title': row[1], 'description' : row[2], 'starts_at': row[3], 'ends_at' : row[4], 'location': row[9], 'address': row[10],'capacity': row[11], 'created_at': row[7]}}
 
 
+#If called with a vaild token and id 
+#will create a single entry in the rsvp table 
 @event_router.post("/{event_id}/rsvp", status_code=201)
-def create_rsvp(event_id: int, body: Rsvp_Booking):
+def create_rsvp(event_id: int, body: Rsvp_Booking) -> dict:
     connection = get_connection()
     cursor = connection.cursor()
     decoded_token = decode_token(body.token)
@@ -60,14 +66,15 @@ def create_rsvp(event_id: int, body: Rsvp_Booking):
     cursor.execute("SELECT * FROM rsvps WHERE attendee_id = %s AND event_id = %s;", (user_id, event_id))
     rows = cursor.fetchall()
     if len(rows) != 0:
-        raise HTTPException (status_code=409, detail={'code': '409', 'message': 'Conflict: you already have a booking'})
-    try:  
+        raise HTTPException (status_code=409, detail={'code': '409', 'message': 'Conflict: you already have a booking'}) 
+    try:
         cursor.execute("""
         INSERT INTO rsvps (attendee_id, event_id)
         VALUES (%s, %s)
         RETURNING *
         """, (user_id, event_id))
     except ForeignKeyViolation:
+        #checks to see if the id is a real event
         raise HTTPException (status_code=404, detail={'code': '404', 'message': 'event not found'})
     rsvp = cursor.fetchone()
     connection.commit()
@@ -75,13 +82,18 @@ def create_rsvp(event_id: int, body: Rsvp_Booking):
     connection.close()
     return{"rsvp": {"id": rsvp[0], "attendee_id": rsvp[1], "event_id": rsvp[2], "created_at": rsvp[3]}}
 
+
+#If called with a valid event_id and a JWT token.
+#will delete a entry in rsvps if its present
 @event_router.delete("/{event_id}/rsvp/me", status_code=204)
-def delete_rsvp(event_id: int, body: dict = Depends(get_current_user)):
+def delete_rsvp(event_id: int, body: dict = Depends(get_current_user)) -> None:
+    #checks JWT token is valid
     connection = get_connection()
     cursor = connection.cursor()
     user_id = body['sub']
     cursor.execute("SELECT * FROM rsvps WHERE attendee_id = %s AND event_id = %s;", (user_id, event_id))
     row = cursor.fetchone()
+    # checks to see if the booking is present in rsvps
     if row is None:
         raise HTTPException (status_code=404, detail={'code': '404', 'message': 'booking not found'})
     cursor.execute("DELETE FROM rsvps WHERE attendee_id = %s AND event_id = %s;", (user_id, event_id))
@@ -89,8 +101,6 @@ def delete_rsvp(event_id: int, body: dict = Depends(get_current_user)):
     cursor.close()
     connection.close()
 
-# @event_router.post("/", status_code=204)
-# def create_event(body:)
 
 
     

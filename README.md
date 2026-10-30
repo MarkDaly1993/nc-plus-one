@@ -89,39 +89,39 @@ uvicorn main:app --reload
 
 DATABASE
 
-- tables
-    events
-    rsvps
-    users
+- tables -
+    events,  
+    rsvps,  
+    users, 
     venues
 
-- events coloumes
-    id
-    title
-    description
-    starts_at
-    ends_at
-    organiser_id
-    venue_id
+- events coloumes -
+    id, 
+    title,  
+    description, 
+    starts_at, 
+    ends_at, 
+    organiser_id, 
+    venue_id, 
     created_at
 
 - rsvps coloums
-    id
-    attendee_id
-    event_id
+    id, 
+    attendee_id, 
+    event_id, 
     created_at
 
 - users coloums
-    id
-    email
-    password
-    name
-    created_at
+    id, 
+    email, 
+    password, 
+    name, 
+    created_at, 
 
 - venues coloums
-    id
-    name
-    address
+    id, 
+    name, 
+    address, 
     capacity
 
 

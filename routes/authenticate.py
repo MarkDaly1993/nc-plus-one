@@ -19,25 +19,35 @@ class User_Create(BaseModel):
     email: str
     password: str
 
+#takes a body with email and password
+#uses the User_Login
 @authenticate_router.post("/login")
-def authenticate_user(body: User_Login):
+def authenticate_user(body: User_Login) -> dict:
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM users WHERE email = %s",(body.email,))
     user = cursor.fetchone()
     cursor.close()
     connection.close()
+    #Checking to see if user is present inside of users
     if user is None:
         raise HTTPException(status_code=401, detail={'code': '401', 'message': 'Unauthorized failed to login'})
+    #verifying the token using the verify token password.
+    #returns True if they are the same
     if verify_password(body.password, user[2]):
+        #creates and returns a JWT token
         return {"token" :create_access_token(user[0])}
     else:
         raise HTTPException(status_code=401, detail={'code': '401', 'message': 'Unauthorized failed to login'})
 
+
+#takes a body containing name, email, password
+#uses the User_Create
 @authenticate_router.post("/register", status_code= 201)
-def register_user(body: User_Create):
+def register_user(body: User_Create) -> dict:
     connection = get_connection()
     cursor = connection.cursor()
+    #test to see if email is already in users
     try:
         cursor.execute("""
         INSERT INTO users (name, email, password)
