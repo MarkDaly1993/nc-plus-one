@@ -3,9 +3,16 @@ from connection_test import get_connection_to_database_test
 import json
 from password import hash_password
 
+#This file if ran will reset the nc_plus_one_test database
+#This is done through the seed() function
 
 
 def create_database_tables(connection):
+    """Creates the 4 tables in the required database
+    adds in factors like specific values being unique 
+    or auto creating an id if created"
+    due to certain keys being refences from other tables
+    it has to create them in this order"""
     cursor = connection.cursor()
 
     cursor.execute(
@@ -61,6 +68,9 @@ def create_database_tables(connection):
 
 
 def drop_tables_if_they_exist(connection):
+    """reset the database by droping all of the 4 tables if they exist
+    Due to certain keys being refenced from other tables it has to drop 
+    them in this order"""
     cursor = connection.cursor()
     cursor.execute("DROP TABLE IF EXISTS Rsvps;")
     cursor.execute("DROP TABLE IF EXISTS Events;")
@@ -69,6 +79,7 @@ def drop_tables_if_they_exist(connection):
     cursor.close()
 
 def populate_data_base_with_user_data(connection):
+    """Seeds the users table from the users json file"""
     cursor = connection.cursor()
     with open("db/test_setup_files/test_data/users.json") as file:
         user_data = json.load(file)
@@ -79,6 +90,7 @@ def populate_data_base_with_user_data(connection):
     cursor.close()
 
 def populate_data_base_with_venue_data(connection):
+    """Seeds the venues table from the venues json file"""
     cursor = connection.cursor()
     with open("db/test_setup_files/test_data/venues.json") as file:
         venues_data = json.load(file)
@@ -89,6 +101,7 @@ def populate_data_base_with_venue_data(connection):
     cursor.close()
 
 def populate_data_base_with_event_data(connection):
+    """Seeds the events table from the events json file"""
     cursor = connection.cursor()
     with open("db/test_setup_files/test_data/events.json") as file:
         events_data = json.load(file)
@@ -99,6 +112,7 @@ def populate_data_base_with_event_data(connection):
     cursor.close()
 
 def populate_data_base_with_rsvps_data(connection):
+    """Seeds the rsvps table from the rsvps json file"""
     cursor = connection.cursor()
     with open("db/test_setup_files/test_data/rsvps.json") as file:
         rsvps_data = json.load(file)
@@ -139,6 +153,8 @@ def populate_data_base_with_rsvps_data(connection):
 #     cursor.close()
 
 def seed(conn):
+    """Invokes the fucnctions to reset the database 
+    and reseed the data into it"""
     drop_tables_if_they_exist(conn)
     create_database_tables(conn)
     populate_data_base_with_user_data(conn)
